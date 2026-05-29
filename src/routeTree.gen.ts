@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifikasiRouteImport } from './routes/verifikasi'
+import { Route as AktivitasRouteImport } from './routes/aktivitas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PenjualIndexRouteImport } from './routes/penjual.index'
 import { Route as CustomerIndexRouteImport } from './routes/customer.index'
@@ -19,6 +20,11 @@ import { Route as CustomerIdRouteImport } from './routes/customer.$id'
 const VerifikasiRoute = VerifikasiRouteImport.update({
   id: '/verifikasi',
   path: '/verifikasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AktivitasRoute = AktivitasRouteImport.update({
+  id: '/aktivitas',
+  path: '/aktivitas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,6 +55,7 @@ const CustomerIdRoute = CustomerIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aktivitas': typeof AktivitasRoute
   '/verifikasi': typeof VerifikasiRoute
   '/customer/$id': typeof CustomerIdRoute
   '/penjual/$id': typeof PenjualIdRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aktivitas': typeof AktivitasRoute
   '/verifikasi': typeof VerifikasiRoute
   '/customer/$id': typeof CustomerIdRoute
   '/penjual/$id': typeof PenjualIdRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aktivitas': typeof AktivitasRoute
   '/verifikasi': typeof VerifikasiRoute
   '/customer/$id': typeof CustomerIdRoute
   '/penjual/$id': typeof PenjualIdRoute
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/aktivitas'
     | '/verifikasi'
     | '/customer/$id'
     | '/penjual/$id'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/aktivitas'
     | '/verifikasi'
     | '/customer/$id'
     | '/penjual/$id'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/aktivitas'
     | '/verifikasi'
     | '/customer/$id'
     | '/penjual/$id'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AktivitasRoute: typeof AktivitasRoute
   VerifikasiRoute: typeof VerifikasiRoute
   CustomerIdRoute: typeof CustomerIdRoute
   PenjualIdRoute: typeof PenjualIdRoute
@@ -115,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/verifikasi'
       fullPath: '/verifikasi'
       preLoaderRoute: typeof VerifikasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aktivitas': {
+      id: '/aktivitas'
+      path: '/aktivitas'
+      fullPath: '/aktivitas'
+      preLoaderRoute: typeof AktivitasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -157,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AktivitasRoute: AktivitasRoute,
   VerifikasiRoute: VerifikasiRoute,
   CustomerIdRoute: CustomerIdRoute,
   PenjualIdRoute: PenjualIdRoute,
