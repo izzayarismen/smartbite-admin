@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifikasiRouteImport } from './routes/verifikasi'
+import { Route as PenjualRouteImport } from './routes/penjual'
 import { Route as IndexRouteImport } from './routes/index'
 
 const VerifikasiRoute = VerifikasiRouteImport.update({
   id: '/verifikasi',
   path: '/verifikasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PenjualRoute = PenjualRouteImport.update({
+  id: '/penjual',
+  path: '/penjual',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,27 +31,31 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/penjual': typeof PenjualRoute
   '/verifikasi': typeof VerifikasiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/penjual': typeof PenjualRoute
   '/verifikasi': typeof VerifikasiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/penjual': typeof PenjualRoute
   '/verifikasi': typeof VerifikasiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/verifikasi'
+  fullPaths: '/' | '/penjual' | '/verifikasi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/verifikasi'
-  id: '__root__' | '/' | '/verifikasi'
+  to: '/' | '/penjual' | '/verifikasi'
+  id: '__root__' | '/' | '/penjual' | '/verifikasi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PenjualRoute: typeof PenjualRoute
   VerifikasiRoute: typeof VerifikasiRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/verifikasi'
       fullPath: '/verifikasi'
       preLoaderRoute: typeof VerifikasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/penjual': {
+      id: '/penjual'
+      path: '/penjual'
+      fullPath: '/penjual'
+      preLoaderRoute: typeof PenjualRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PenjualRoute: PenjualRoute,
   VerifikasiRoute: VerifikasiRoute,
 }
 export const routeTree = rootRouteImport
