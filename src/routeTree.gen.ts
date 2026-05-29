@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifikasiRouteImport } from './routes/verifikasi'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PengaturanRouteImport } from './routes/pengaturan'
 import { Route as AktivitasRouteImport } from './routes/aktivitas'
 import { Route as IndexRouteImport } from './routes/index'
@@ -21,6 +22,11 @@ import { Route as CustomerIdRouteImport } from './routes/customer.$id'
 const VerifikasiRoute = VerifikasiRouteImport.update({
   id: '/verifikasi',
   path: '/verifikasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PengaturanRoute = PengaturanRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aktivitas': typeof AktivitasRoute
   '/pengaturan': typeof PengaturanRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verifikasi': typeof VerifikasiRoute
   '/customer/$id': typeof CustomerIdRoute
   '/penjual/$id': typeof PenjualIdRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/aktivitas': typeof AktivitasRoute
   '/pengaturan': typeof PengaturanRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verifikasi': typeof VerifikasiRoute
   '/customer/$id': typeof CustomerIdRoute
   '/penjual/$id': typeof PenjualIdRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/aktivitas': typeof AktivitasRoute
   '/pengaturan': typeof PengaturanRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verifikasi': typeof VerifikasiRoute
   '/customer/$id': typeof CustomerIdRoute
   '/penjual/$id': typeof PenjualIdRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/aktivitas'
     | '/pengaturan'
+    | '/sitemap.xml'
     | '/verifikasi'
     | '/customer/$id'
     | '/penjual/$id'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/aktivitas'
     | '/pengaturan'
+    | '/sitemap.xml'
     | '/verifikasi'
     | '/customer/$id'
     | '/penjual/$id'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/aktivitas'
     | '/pengaturan'
+    | '/sitemap.xml'
     | '/verifikasi'
     | '/customer/$id'
     | '/penjual/$id'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AktivitasRoute: typeof AktivitasRoute
   PengaturanRoute: typeof PengaturanRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerifikasiRoute: typeof VerifikasiRoute
   CustomerIdRoute: typeof CustomerIdRoute
   PenjualIdRoute: typeof PenjualIdRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/verifikasi'
       fullPath: '/verifikasi'
       preLoaderRoute: typeof VerifikasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pengaturan': {
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AktivitasRoute: AktivitasRoute,
   PengaturanRoute: PengaturanRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerifikasiRoute: VerifikasiRoute,
   CustomerIdRoute: CustomerIdRoute,
   PenjualIdRoute: PenjualIdRoute,
