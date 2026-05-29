@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifikasiRouteImport } from './routes/verifikasi'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PenjualIndexRouteImport } from './routes/penjual.index'
+import { Route as PenjualIdRouteImport } from './routes/penjual.$id'
 
 const VerifikasiRoute = VerifikasiRouteImport.update({
   id: '/verifikasi',
@@ -28,34 +29,43 @@ const PenjualIndexRoute = PenjualIndexRouteImport.update({
   path: '/penjual/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PenjualIdRoute = PenjualIdRouteImport.update({
+  id: '/penjual/$id',
+  path: '/penjual/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/verifikasi': typeof VerifikasiRoute
+  '/penjual/$id': typeof PenjualIdRoute
   '/penjual/': typeof PenjualIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/verifikasi': typeof VerifikasiRoute
+  '/penjual/$id': typeof PenjualIdRoute
   '/penjual': typeof PenjualIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/verifikasi': typeof VerifikasiRoute
+  '/penjual/$id': typeof PenjualIdRoute
   '/penjual/': typeof PenjualIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/verifikasi' | '/penjual/'
+  fullPaths: '/' | '/verifikasi' | '/penjual/$id' | '/penjual/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/verifikasi' | '/penjual'
-  id: '__root__' | '/' | '/verifikasi' | '/penjual/'
+  to: '/' | '/verifikasi' | '/penjual/$id' | '/penjual'
+  id: '__root__' | '/' | '/verifikasi' | '/penjual/$id' | '/penjual/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   VerifikasiRoute: typeof VerifikasiRoute
+  PenjualIdRoute: typeof PenjualIdRoute
   PenjualIndexRoute: typeof PenjualIndexRoute
 }
 
@@ -82,12 +92,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PenjualIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/penjual/$id': {
+      id: '/penjual/$id'
+      path: '/penjual/$id'
+      fullPath: '/penjual/$id'
+      preLoaderRoute: typeof PenjualIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   VerifikasiRoute: VerifikasiRoute,
+  PenjualIdRoute: PenjualIdRoute,
   PenjualIndexRoute: PenjualIndexRoute,
 }
 export const routeTree = rootRouteImport
