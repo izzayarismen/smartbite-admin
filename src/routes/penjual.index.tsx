@@ -7,7 +7,7 @@ import { StatusBadge } from "@/components/ui/status-badge";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { sellers as seedSellers, formatIDR, type Seller } from "@/lib/data";
 
-export const Route = createFileRoute("/penjual")({
+export const Route = createFileRoute("/penjual/")({
   head: () => ({
     meta: [
       { title: "Manajemen Penjual — SmartBite Admin" },
