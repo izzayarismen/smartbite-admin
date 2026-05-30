@@ -106,6 +106,16 @@ function VerifikasiPage() {
                   <span className="inline-flex items-center gap-1"><Tag className="h-3.5 w-3.5" />{s.category}</span>
                   <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{s.registeredAt}</span>
                 </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    <img src={s.ktpPhoto} alt="KTP" className="h-16 w-full object-cover" />
+                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto KTP</p>
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    <img src={s.selfiePhoto} alt="Diri" className="h-16 w-full object-cover" />
+                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto Diri</p>
+                  </div>
+                </div>
               </div>
             </GlassCard>
           ))}
