@@ -123,6 +123,8 @@ export const sellers: Seller[] = stores.map((store, i) => ({
   revenue: 4_500_000 + i * 1_250_000,
   category: categories[i % categories.length],
   joined: `2023-${String((i % 12) + 1).padStart(2, "0")}-12`,
+  openTime: hours[i % hours.length][0],
+  closeTime: hours[i % hours.length][1],
 }));
 
 const custNames = [
