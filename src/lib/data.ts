@@ -80,16 +80,28 @@ const categories = ["Makanan Berat", "Minuman", "Snack", "Dessert", "Sehat"];
 const img = (seed: string) =>
   `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=60&sig=${seed}`;
 
+const ktpImg = (seed: string) =>
+  `https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=60&sig=${seed}`;
+
+const selfieImg = (seed: number) =>
+  `https://i.pravatar.cc/300?img=${(seed % 60) + 1}`;
+
+const hours: [string, string][] = [
+  ["08:00", "17:00"], ["09:00", "21:00"], ["07:30", "16:00"],
+  ["10:00", "22:00"], ["08:30", "20:00"], ["11:00", "23:00"],
+];
+
 export const pendingSellers: PendingSeller[] = Array.from({ length: 6 }, (_, i) => ({
   id: `PS-${1001 + i}`,
   name: owners[i],
   store: stores[i],
   category: categories[i % categories.length],
   storePhoto: img(String(i)),
+  ktpPhoto: ktpImg(String(i)),
+  selfiePhoto: selfieImg(i + 10),
   registeredAt: `2024-06-${String(10 + i).padStart(2, "0")}`,
   phone: `+62 812-3456-${1000 + i}`,
   email: `${owners[i].split(" ")[0].toLowerCase()}@mail.com`,
-  address: `Gedung Pujasera Blok ${String.fromCharCode(65 + i)}, Kampus Timur`,
 }));
 
 export const verifyHistory: VerifyHistory[] = [
