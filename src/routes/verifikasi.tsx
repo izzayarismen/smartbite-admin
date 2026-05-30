@@ -172,19 +172,22 @@ function VerifikasiPage() {
       >
         {selected && (
           <div className="space-y-5">
-            <img src={selected.storePhoto} alt={selected.store} className="h-40 w-full rounded-2xl object-cover" />
             <DetailRow icon={UserSquare} label="Nama Penjual" value={selected.name} />
             <DetailRow icon={Tag} label="Kategori Toko" value={selected.category} />
             <DetailRow icon={Phone} label="Nomor HP" value={selected.phone} />
             <DetailRow icon={Mail} label="Email" value={selected.email} />
-            <DetailRow icon={MapPin} label="Alamat" value={selected.address} />
             <DetailRow icon={Calendar} label="Tanggal Pendaftaran" value={selected.registeredAt} />
+
+            <div>
+              <p className="mb-2 text-sm font-semibold">Foto Toko</p>
+              <img src={selected.storePhoto} alt={selected.store} className="h-40 w-full rounded-2xl object-cover" />
+            </div>
 
             <div>
               <p className="mb-2 text-sm font-semibold">Dokumen Verifikasi</p>
               <div className="grid grid-cols-2 gap-3">
-                <DocCard icon={CreditCard} label="Foto KTP" />
-                <DocCard icon={UserSquare} label="Foto Diri" />
+                <DocCard src={selected.ktpPhoto} label="Foto KTP" />
+                <DocCard src={selected.selfiePhoto} label="Foto Diri" />
               </div>
             </div>
           </div>
