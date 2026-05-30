@@ -1,21 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, ShoppingBag, Wallet, Clock, Mail, Phone, Calendar } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Clock, Mail, Phone, Calendar } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { customers, formatIDR } from "@/lib/data";
+import { customers } from "@/lib/data";
 
 export const Route = createFileRoute("/customer/$id")({
   head: () => ({ meta: [{ title: "Detail Customer — SmartBite Admin" }] }),
   component: DetailCustomer,
 });
-
-const orders = [
-  { id: "O1", store: "Ayam Geprek Mantul", item: "Ayam Geprek + Es Teh", total: 28000, date: "Hari ini" },
-  { id: "O2", store: "Kopi Senja", item: "Kopi Susu Gula Aren", total: 18000, date: "Kemarin" },
-  { id: "O3", store: "Nasi Goreng Pak Budi", item: "Nasi Goreng Spesial", total: 25000, date: "2 hari lalu" },
-  { id: "O4", store: "Bakso Beranak", item: "Bakso Komplit", total: 22000, date: "3 hari lalu" },
-];
 
 function DetailCustomer() {
   const { id } = Route.useParams();
@@ -25,11 +18,10 @@ function DetailCustomer() {
     return <AdminLayout title="Detail Customer"><GlassCard>Customer tidak ditemukan.</GlassCard></AdminLayout>;
   }
 
-  const totalSpent = orders.reduce((a, o) => a + o.total, 0) * 6;
   const stats = [
     { label: "Total Pesanan", value: c.totalOrder, icon: ShoppingBag },
-    { label: "Total Transaksi", value: formatIDR(totalSpent), icon: Wallet },
     { label: "Aktivitas Terakhir", value: c.lastActive, icon: Clock },
+    { label: "Status Customer", value: c.status === "active" ? "Aktif" : "Suspended", icon: Calendar },
   ];
 
   return (
@@ -71,21 +63,6 @@ function DetailCustomer() {
           </div>
         </GlassCard>
       </div>
-
-      <GlassCard delay={0.12} className="mt-5">
-        <h3 className="mb-4 font-bold">Riwayat Pesanan</h3>
-        <div className="space-y-3">
-          {orders.map((o) => (
-            <div key={o.id} className="flex items-center justify-between rounded-2xl bg-accent/40 p-4">
-              <div>
-                <p className="text-sm font-semibold">{o.item}</p>
-                <p className="text-xs text-muted-foreground">{o.store} · {o.date}</p>
-              </div>
-              <span className="text-sm font-bold text-primary">{formatIDR(o.total)}</span>
-            </div>
-          ))}
-        </div>
-      </GlassCard>
     </AdminLayout>
   );
 }
