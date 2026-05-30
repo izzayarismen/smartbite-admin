@@ -147,12 +147,13 @@ export const customers: Customer[] = custNames.map((name, i) => ({
 export const activities: ActivityItem[] = [
   { id: "A1", type: "login", actor: "Admin Rama", description: "Login ke panel admin", time: "Hari ini, 09:12" },
   { id: "A2", type: "approve", actor: "Admin Rama", description: "Menyetujui penjual Warung Bu Tini", time: "Hari ini, 09:30" },
-  { id: "A3", type: "suspend", actor: "Admin Sari", description: "Menangguhkan akun Adi Nugroho", time: "Hari ini, 10:05" },
+  { id: "A3", type: "delete_customer", actor: "Admin Sari", description: "Menghapus akun customer Adi Nugroho", time: "Hari ini, 10:05" },
   { id: "A4", type: "reject", actor: "Admin Rama", description: "Menolak penjual Cireng Crispy", time: "Kemarin, 16:40" },
-  { id: "A5", type: "activate", actor: "Admin Sari", description: "Mengaktifkan toko Kopi Senja", time: "Kemarin, 14:22" },
-  { id: "A6", type: "deactivate", actor: "Admin Rama", description: "Menonaktifkan toko Mie Ayam Jaya", time: "Kemarin, 11:18" },
-  { id: "A7", type: "login", actor: "Admin Sari", description: "Login ke panel admin", time: "2 hari lalu, 08:50" },
-  { id: "A8", type: "approve", actor: "Admin Sari", description: "Menyetujui penjual Boba Time", time: "2 hari lalu, 09:15" },
+  { id: "A5", type: "open_store", actor: "Admin Sari", description: "Membuka toko Kopi Senja", time: "Kemarin, 14:22" },
+  { id: "A6", type: "close_store", actor: "Admin Rama", description: "Menutup toko Mie Ayam Jaya", time: "Kemarin, 11:18" },
+  { id: "A7", type: "delete_store", actor: "Admin Rama", description: "Menghapus toko Cireng Crispy", time: "2 hari lalu, 13:00" },
+  { id: "A8", type: "login", actor: "Admin Sari", description: "Login ke panel admin", time: "2 hari lalu, 08:50" },
+  { id: "A9", type: "approve", actor: "Admin Sari", description: "Menyetujui penjual Boba Time", time: "2 hari lalu, 09:15" },
 ];
 
 export const dailySales = [
