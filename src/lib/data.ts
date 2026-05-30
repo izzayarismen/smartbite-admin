@@ -8,10 +8,11 @@ export interface PendingSeller {
   store: string;
   category: string;
   storePhoto: string;
+  ktpPhoto: string;
+  selfiePhoto: string;
   registeredAt: string;
   phone: string;
   email: string;
-  address: string;
 }
 
 export interface VerifyHistory {
