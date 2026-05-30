@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Check, X, Calendar, Tag, MapPin, Phone, Mail, CreditCard, UserSquare } from "lucide-react";
+import { Check, X, Calendar, Tag, Phone, Mail, UserSquare } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
