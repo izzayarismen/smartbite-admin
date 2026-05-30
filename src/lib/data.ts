@@ -33,6 +33,8 @@ export interface Seller {
   revenue: number;
   category: string;
   joined: string;
+  openTime: string;
+  closeTime: string;
 }
 
 export interface Customer {
