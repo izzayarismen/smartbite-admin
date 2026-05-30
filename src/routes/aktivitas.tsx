@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  LogIn, CheckCircle2, XCircle, Ban, Power, PowerOff, Search,
+  LogIn, CheckCircle2, XCircle, UserMinus, Power, PowerOff, Trash2, Search,
 } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
@@ -19,12 +19,13 @@ export const Route = createFileRoute("/aktivitas")({
 });
 
 const meta: Record<ActivityItem["type"], { icon: React.ElementType; color: string; label: string }> = {
-  login: { icon: LogIn, color: "bg-primary/12 text-primary", label: "Login" },
-  approve: { icon: CheckCircle2, color: "bg-success/12 text-success", label: "Approve" },
-  reject: { icon: XCircle, color: "bg-destructive/12 text-destructive", label: "Reject" },
-  suspend: { icon: Ban, color: "bg-destructive/12 text-destructive", label: "Suspend" },
-  activate: { icon: Power, color: "bg-success/12 text-success", label: "Aktivasi" },
-  deactivate: { icon: PowerOff, color: "bg-warning/20 text-warning-foreground", label: "Nonaktif" },
+  login: { icon: LogIn, color: "bg-primary/12 text-primary", label: "Login Admin" },
+  approve: { icon: CheckCircle2, color: "bg-success/12 text-success", label: "Approve Seller" },
+  reject: { icon: XCircle, color: "bg-destructive/12 text-destructive", label: "Reject Seller" },
+  delete_customer: { icon: UserMinus, color: "bg-destructive/12 text-destructive", label: "Delete Customer" },
+  open_store: { icon: Power, color: "bg-success/12 text-success", label: "Buka Toko" },
+  close_store: { icon: PowerOff, color: "bg-warning/20 text-warning-foreground", label: "Tutup Toko" },
+  delete_store: { icon: Trash2, color: "bg-destructive/12 text-destructive", label: "Delete Toko" },
 };
 
 function AktivitasPage() {
