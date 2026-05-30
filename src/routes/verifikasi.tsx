@@ -211,11 +211,11 @@ function DetailRow({ icon: Icon, label, value }: { icon: React.ElementType; labe
   );
 }
 
-function DocCard({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
+function DocCard({ src, label }: { src: string; label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-accent/30 py-6 text-muted-foreground">
-      <Icon className="h-6 w-6" />
-      <span className="text-xs font-medium">{label}</span>
+    <div className="overflow-hidden rounded-2xl border border-border bg-accent/30">
+      <img src={src} alt={label} className="h-28 w-full object-cover" />
+      <p className="py-2 text-center text-xs font-medium text-muted-foreground">{label}</p>
     </div>
   );
 }
