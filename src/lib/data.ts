@@ -54,9 +54,10 @@ export interface ActivityItem {
     | "login"
     | "approve"
     | "reject"
-    | "suspend"
-    | "activate"
-    | "deactivate";
+    | "delete_customer"
+    | "open_store"
+    | "close_store"
+    | "delete_store";
   actor: string;
   description: string;
   time: string;
