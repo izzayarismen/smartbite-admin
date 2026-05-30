@@ -1,0 +1,105 @@
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, LineChart } from "lucide-react";
+import {
+  Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis,
+} from "recharts";
+import { GlassCard } from "@/components/ui/glass-card";
+
+const tooltipStyle = {
+  borderRadius: 16,
+  border: "1px solid rgba(11,97,244,0.15)",
+  boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+  fontSize: 12,
+} as const;
+
+type Period = "daily" | "monthly";
+
+export function AnalyticsCard({
+  title,
+  subtitle,
+  daily,
+  monthly,
+  delay = 0,
+  className,
+}: {
+  title: string;
+  subtitle?: string;
+  daily: { label: string; value: number }[];
+  monthly: { label: string; value: number }[];
+  delay?: number;
+  className?: string;
+}) {
+  const [period, setPeriod] = useState<Period>("daily");
+  const [open, setOpen] = useState(false);
+  const data = period === "daily" ? daily : monthly;
+
+  return (
+    <GlassCard delay={delay} className={className}>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="grid h-9 w-9 place-items-center rounded-xl gradient-brand text-primary-foreground shadow-glow">
+            <LineChart className="h-[18px] w-[18px]" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold leading-tight">{title}</h2>
+            {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+          </div>
+        </div>
+
+        <div className="relative">
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-3.5 py-2 text-sm font-semibold transition-shadow hover:shadow-glow"
+          >
+            {period === "daily" ? "Harian" : "Bulanan"}
+            <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+          </button>
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 z-20 mt-2 w-36 overflow-hidden rounded-2xl border border-border bg-card/95 p-1 shadow-soft backdrop-blur-md"
+              >
+                {(["daily", "monthly"] as Period[]).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => { setPeriod(p); setOpen(false); }}
+                    className={`block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold transition-colors ${period === p ? "gradient-brand text-primary-foreground" : "hover:bg-accent"}`}
+                  >
+                    {p === "daily" ? "Harian" : "Bulanan"}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <ResponsiveContainer width="100%" height={280}>
+        <AreaChart data={data} margin={{ left: -20 }}>
+          <defs>
+            <linearGradient id={`analytics-${title}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#0B61F4" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="#0B61F4" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="rgba(0,0,0,0.06)" />
+          <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={12} />
+          <Tooltip contentStyle={tooltipStyle} />
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke="#0B61F4"
+            strokeWidth={3}
+            fill={`url(#analytics-${title})`}
+            animationDuration={600}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </GlassCard>
+  );
+}

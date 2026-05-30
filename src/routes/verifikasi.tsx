@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Check, X, Calendar, Tag, MapPin, Phone, Mail, CreditCard, UserSquare } from "lucide-react";
+import { Check, X, Calendar, Tag, Phone, Mail, UserSquare } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -106,6 +106,16 @@ function VerifikasiPage() {
                   <span className="inline-flex items-center gap-1"><Tag className="h-3.5 w-3.5" />{s.category}</span>
                   <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{s.registeredAt}</span>
                 </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    <img src={s.ktpPhoto} alt="KTP" className="h-16 w-full object-cover" />
+                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto KTP</p>
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    <img src={s.selfiePhoto} alt="Diri" className="h-16 w-full object-cover" />
+                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto Diri</p>
+                  </div>
+                </div>
               </div>
             </GlassCard>
           ))}
@@ -172,19 +182,22 @@ function VerifikasiPage() {
       >
         {selected && (
           <div className="space-y-5">
-            <img src={selected.storePhoto} alt={selected.store} className="h-40 w-full rounded-2xl object-cover" />
             <DetailRow icon={UserSquare} label="Nama Penjual" value={selected.name} />
             <DetailRow icon={Tag} label="Kategori Toko" value={selected.category} />
             <DetailRow icon={Phone} label="Nomor HP" value={selected.phone} />
             <DetailRow icon={Mail} label="Email" value={selected.email} />
-            <DetailRow icon={MapPin} label="Alamat" value={selected.address} />
             <DetailRow icon={Calendar} label="Tanggal Pendaftaran" value={selected.registeredAt} />
+
+            <div>
+              <p className="mb-2 text-sm font-semibold">Foto Toko</p>
+              <img src={selected.storePhoto} alt={selected.store} className="h-40 w-full rounded-2xl object-cover" />
+            </div>
 
             <div>
               <p className="mb-2 text-sm font-semibold">Dokumen Verifikasi</p>
               <div className="grid grid-cols-2 gap-3">
-                <DocCard icon={CreditCard} label="Foto KTP" />
-                <DocCard icon={UserSquare} label="Foto Diri" />
+                <DocCard src={selected.ktpPhoto} label="Foto KTP" />
+                <DocCard src={selected.selfiePhoto} label="Foto Diri" />
               </div>
             </div>
           </div>
@@ -208,11 +221,11 @@ function DetailRow({ icon: Icon, label, value }: { icon: React.ElementType; labe
   );
 }
 
-function DocCard({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
+function DocCard({ src, label }: { src: string; label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-accent/30 py-6 text-muted-foreground">
-      <Icon className="h-6 w-6" />
-      <span className="text-xs font-medium">{label}</span>
+    <div className="overflow-hidden rounded-2xl border border-border bg-accent/30">
+      <img src={src} alt={label} className="h-28 w-full object-cover" />
+      <p className="py-2 text-center text-xs font-medium text-muted-foreground">{label}</p>
     </div>
   );
 }

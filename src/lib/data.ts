@@ -8,10 +8,11 @@ export interface PendingSeller {
   store: string;
   category: string;
   storePhoto: string;
+  ktpPhoto: string;
+  selfiePhoto: string;
   registeredAt: string;
   phone: string;
   email: string;
-  address: string;
 }
 
 export interface VerifyHistory {
@@ -32,6 +33,8 @@ export interface Seller {
   revenue: number;
   category: string;
   joined: string;
+  openTime: string;
+  closeTime: string;
 }
 
 export interface Customer {
@@ -51,9 +54,10 @@ export interface ActivityItem {
     | "login"
     | "approve"
     | "reject"
-    | "suspend"
-    | "activate"
-    | "deactivate";
+    | "delete_customer"
+    | "open_store"
+    | "close_store"
+    | "delete_store";
   actor: string;
   description: string;
   time: string;
@@ -76,16 +80,28 @@ const categories = ["Makanan Berat", "Minuman", "Snack", "Dessert", "Sehat"];
 const img = (seed: string) =>
   `https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=60&sig=${seed}`;
 
+const ktpImg = (seed: string) =>
+  `https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=400&q=60&sig=${seed}`;
+
+const selfieImg = (seed: number) =>
+  `https://i.pravatar.cc/300?img=${(seed % 60) + 1}`;
+
+const hours: [string, string][] = [
+  ["08:00", "17:00"], ["09:00", "21:00"], ["07:30", "16:00"],
+  ["10:00", "22:00"], ["08:30", "20:00"], ["11:00", "23:00"],
+];
+
 export const pendingSellers: PendingSeller[] = Array.from({ length: 6 }, (_, i) => ({
   id: `PS-${1001 + i}`,
   name: owners[i],
   store: stores[i],
   category: categories[i % categories.length],
   storePhoto: img(String(i)),
+  ktpPhoto: ktpImg(String(i)),
+  selfiePhoto: selfieImg(i + 10),
   registeredAt: `2024-06-${String(10 + i).padStart(2, "0")}`,
   phone: `+62 812-3456-${1000 + i}`,
   email: `${owners[i].split(" ")[0].toLowerCase()}@mail.com`,
-  address: `Gedung Pujasera Blok ${String.fromCharCode(65 + i)}, Kampus Timur`,
 }));
 
 export const verifyHistory: VerifyHistory[] = [
@@ -107,6 +123,8 @@ export const sellers: Seller[] = stores.map((store, i) => ({
   revenue: 4_500_000 + i * 1_250_000,
   category: categories[i % categories.length],
   joined: `2023-${String((i % 12) + 1).padStart(2, "0")}-12`,
+  openTime: hours[i % hours.length][0],
+  closeTime: hours[i % hours.length][1],
 }));
 
 const custNames = [
@@ -129,12 +147,13 @@ export const customers: Customer[] = custNames.map((name, i) => ({
 export const activities: ActivityItem[] = [
   { id: "A1", type: "login", actor: "Admin Rama", description: "Login ke panel admin", time: "Hari ini, 09:12" },
   { id: "A2", type: "approve", actor: "Admin Rama", description: "Menyetujui penjual Warung Bu Tini", time: "Hari ini, 09:30" },
-  { id: "A3", type: "suspend", actor: "Admin Sari", description: "Menangguhkan akun Adi Nugroho", time: "Hari ini, 10:05" },
+  { id: "A3", type: "delete_customer", actor: "Admin Sari", description: "Menghapus akun customer Adi Nugroho", time: "Hari ini, 10:05" },
   { id: "A4", type: "reject", actor: "Admin Rama", description: "Menolak penjual Cireng Crispy", time: "Kemarin, 16:40" },
-  { id: "A5", type: "activate", actor: "Admin Sari", description: "Mengaktifkan toko Kopi Senja", time: "Kemarin, 14:22" },
-  { id: "A6", type: "deactivate", actor: "Admin Rama", description: "Menonaktifkan toko Mie Ayam Jaya", time: "Kemarin, 11:18" },
-  { id: "A7", type: "login", actor: "Admin Sari", description: "Login ke panel admin", time: "2 hari lalu, 08:50" },
-  { id: "A8", type: "approve", actor: "Admin Sari", description: "Menyetujui penjual Boba Time", time: "2 hari lalu, 09:15" },
+  { id: "A5", type: "open_store", actor: "Admin Sari", description: "Membuka toko Kopi Senja", time: "Kemarin, 14:22" },
+  { id: "A6", type: "close_store", actor: "Admin Rama", description: "Menutup toko Mie Ayam Jaya", time: "Kemarin, 11:18" },
+  { id: "A7", type: "delete_store", actor: "Admin Rama", description: "Menghapus toko Cireng Crispy", time: "2 hari lalu, 13:00" },
+  { id: "A8", type: "login", actor: "Admin Sari", description: "Login ke panel admin", time: "2 hari lalu, 08:50" },
+  { id: "A9", type: "approve", actor: "Admin Sari", description: "Menyetujui penjual Boba Time", time: "2 hari lalu, 09:15" },
 ];
 
 export const dailySales = [

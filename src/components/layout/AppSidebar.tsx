@@ -6,7 +6,6 @@ import {
   Store,
   Users,
   Activity,
-  Settings,
   UtensilsCrossed,
 } from "lucide-react";
 
@@ -16,7 +15,6 @@ const items = [
   { title: "Manajemen Penjual", url: "/penjual", icon: Store },
   { title: "Customer", url: "/customer", icon: Users },
   { title: "Aktivitas Sistem", url: "/aktivitas", icon: Activity },
-  { title: "Pengaturan", url: "/pengaturan", icon: Settings },
 ];
 
 export function AppSidebar() {
