@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Star, ShoppingBag, Clock, Store, User, Trophy } from "lucide-react";
+import { ArrowLeft, Star, ShoppingBag, Clock, Store, User, Trophy, FileText, Eye, Download } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -101,6 +101,43 @@ function DetailPenjual() {
               <Store className="h-4 w-4 text-primary" />
               <span className="text-muted-foreground">Jam buka</span>
               <span className="ml-auto font-semibold">{seller.openTime} - {seller.closeTime}</span>
+            </div>
+          </div>
+        </GlassCard>
+      </div>
+
+      <div className="mt-5">
+        <GlassCard delay={0.18}>
+          <div className="mb-4 flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            <h3 className="font-bold">Dokumen Surat Perjanjian</h3>
+          </div>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="overflow-hidden rounded-2xl border border-border bg-accent/30 md:col-span-1">
+              <img src={seller.agreementDoc} alt="Surat Perjanjian" className="h-56 w-full object-cover" />
+            </div>
+            <div className="flex flex-col justify-center gap-3 md:col-span-2">
+              <p className="text-sm text-muted-foreground">
+                Dokumen ini diunggah oleh penjual saat proses pendaftaran sebagai bukti persetujuan
+                ketentuan platform SmartBite.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={seller.agreementDoc}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-accent"
+                >
+                  <Eye className="h-4 w-4" /> Lihat Dokumen Penuh
+                </a>
+                <a
+                  href={seller.agreementDoc}
+                  download
+                  className="inline-flex items-center gap-2 rounded-2xl gradient-brand px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
+                >
+                  <Download className="h-4 w-4" /> Unduh
+                </a>
+              </div>
             </div>
           </div>
         </GlassCard>

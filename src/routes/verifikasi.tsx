@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Check, X, Calendar, Tag, Phone, Mail, UserSquare } from "lucide-react";
+import { Check, X, Calendar, Tag, Phone, Mail, UserSquare, Store, Eye, Download } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -106,7 +106,7 @@ function VerifikasiPage() {
                   <span className="inline-flex items-center gap-1"><Tag className="h-3.5 w-3.5" />{s.category}</span>
                   <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{s.registeredAt}</span>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="mt-3 grid grid-cols-3 gap-2">
                   <div className="overflow-hidden rounded-xl border border-border">
                     <img src={s.ktpPhoto} alt="KTP" className="h-16 w-full object-cover" />
                     <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto KTP</p>
@@ -114,6 +114,10 @@ function VerifikasiPage() {
                   <div className="overflow-hidden rounded-xl border border-border">
                     <img src={s.selfiePhoto} alt="Diri" className="h-16 w-full object-cover" />
                     <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto Diri</p>
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-border">
+                    <img src={s.agreementDoc} alt="Surat Perjanjian" className="h-16 w-full object-cover" />
+                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Surat Perjanjian</p>
                   </div>
                 </div>
               </div>
@@ -183,6 +187,7 @@ function VerifikasiPage() {
         {selected && (
           <div className="space-y-5">
             <DetailRow icon={UserSquare} label="Nama Penjual" value={selected.name} />
+            <DetailRow icon={Store} label="Nama Toko" value={selected.store} />
             <DetailRow icon={Tag} label="Kategori Toko" value={selected.category} />
             <DetailRow icon={Phone} label="Nomor HP" value={selected.phone} />
             <DetailRow icon={Mail} label="Email" value={selected.email} />
@@ -198,6 +203,30 @@ function VerifikasiPage() {
               <div className="grid grid-cols-2 gap-3">
                 <DocCard src={selected.ktpPhoto} label="Foto KTP" />
                 <DocCard src={selected.selfiePhoto} label="Foto Diri" />
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-sm font-semibold">Surat Perjanjian</p>
+              <div className="overflow-hidden rounded-2xl border border-border bg-accent/30">
+                <img src={selected.agreementDoc} alt="Surat Perjanjian" className="h-44 w-full object-cover" />
+                <div className="flex gap-2 p-3">
+                  <a
+                    href={selected.agreementDoc}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-semibold transition-colors hover:bg-accent"
+                  >
+                    <Eye className="h-4 w-4" /> Lihat
+                  </a>
+                  <a
+                    href={selected.agreementDoc}
+                    download
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl gradient-brand py-2.5 text-sm font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
+                  >
+                    <Download className="h-4 w-4" /> Unduh
+                  </a>
+                </div>
               </div>
             </div>
           </div>

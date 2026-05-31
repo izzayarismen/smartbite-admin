@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { AppSidebar } from "./AppSidebar";
+import { AppSidebar, MobileSidebar } from "./AppSidebar";
 import { Topbar } from "./Topbar";
 
 export function AdminLayout({
@@ -11,6 +12,8 @@ export function AdminLayout({
   subtitle?: string;
   children: React.ReactNode;
 }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       {/* decorative background */}
@@ -29,10 +32,11 @@ export function AdminLayout({
       </div>
 
       <AppSidebar />
+      <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <div className="lg:pl-72">
         <div className="mx-auto max-w-[1400px] px-4 pb-10 sm:px-6">
-          <Topbar title={title} subtitle={subtitle} />
+          <Topbar title={title} subtitle={subtitle} onMenuClick={() => setMobileOpen(true)} />
           <motion.main
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

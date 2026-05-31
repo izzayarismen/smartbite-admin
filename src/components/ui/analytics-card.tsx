@@ -8,9 +8,12 @@ import { GlassCard } from "@/components/ui/glass-card";
 
 const tooltipStyle = {
   borderRadius: 16,
-  border: "1px solid rgba(11,97,244,0.15)",
-  boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+  border: "1px solid #2773F5",
+  background: "rgba(255,255,255,0.96)",
+  boxShadow: "0 10px 40px rgba(11,97,244,0.25)",
+  color: "#0B61F4",
   fontSize: 12,
+  fontWeight: 600,
 } as const;
 
 type Period = "daily" | "monthly";
@@ -83,19 +86,29 @@ export function AnalyticsCard({
         <AreaChart data={data} margin={{ left: -20 }}>
           <defs>
             <linearGradient id={`analytics-${title}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#0B61F4" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#0B61F4" stopOpacity={0} />
+              <stop offset="0%" stopColor="#0B61F4" stopOpacity={0.55} />
+              <stop offset="50%" stopColor="#2773F5" stopOpacity={0.28} />
+              <stop offset="100%" stopColor="#6EA8FF" stopOpacity={0.04} />
+            </linearGradient>
+            <linearGradient id={`analytics-stroke-${title}`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#0B61F4" />
+              <stop offset="100%" stopColor="#2773F5" />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="rgba(0,0,0,0.06)" />
-          <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={12} />
-          <Tooltip contentStyle={tooltipStyle} />
+          <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="rgba(11,97,244,0.10)" />
+          <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={12} stroke="#2773F5" />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            cursor={{ stroke: "#2773F5", strokeWidth: 1.5, strokeDasharray: "4 4" }}
+          />
           <Area
             type="monotone"
             dataKey="value"
-            stroke="#0B61F4"
+            stroke={`url(#analytics-stroke-${title})`}
             strokeWidth={3}
             fill={`url(#analytics-${title})`}
+            dot={{ r: 3, fill: "#0B61F4", strokeWidth: 0 }}
+            activeDot={{ r: 6, fill: "#0B61F4", stroke: "#6EA8FF", strokeWidth: 3 }}
             animationDuration={600}
           />
         </AreaChart>
