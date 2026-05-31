@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Star, ShoppingBag, Clock, Store, User, Trophy } from "lucide-react";
+import { ArrowLeft, Star, ShoppingBag, Clock, Store, User, Trophy, FileText, Eye, Download } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
