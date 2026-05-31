@@ -8,9 +8,12 @@ import { GlassCard } from "@/components/ui/glass-card";
 
 const tooltipStyle = {
   borderRadius: 16,
-  border: "1px solid rgba(11,97,244,0.15)",
-  boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
+  border: "1px solid #2773F5",
+  background: "rgba(255,255,255,0.96)",
+  boxShadow: "0 10px 40px rgba(11,97,244,0.25)",
+  color: "#0B61F4",
   fontSize: 12,
+  fontWeight: 600,
 } as const;
 
 type Period = "daily" | "monthly";
