@@ -111,6 +111,9 @@ const ktpImg = (seed: string) =>
 const selfieImg = (seed: number) =>
   `https://i.pravatar.cc/300?img=${(seed % 60) + 1}`;
 
+const docImg = (seed: string) =>
+  `https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=400&q=60&sig=${seed}`;
+
 const hours: [string, string][] = [
   ["08:00", "17:00"], ["09:00", "21:00"], ["07:30", "16:00"],
   ["10:00", "22:00"], ["08:30", "20:00"], ["11:00", "23:00"],
@@ -124,6 +127,7 @@ export const pendingSellers: PendingSeller[] = Array.from({ length: 6 }, (_, i) 
   storePhoto: img(String(i)),
   ktpPhoto: ktpImg(String(i)),
   selfiePhoto: selfieImg(i + 10),
+  agreementDoc: docImg(String(i)),
   registeredAt: `2024-06-${String(10 + i).padStart(2, "0")}`,
   phone: `+62 812-3456-${1000 + i}`,
   email: `${owners[i].split(" ")[0].toLowerCase()}@mail.com`,
@@ -150,6 +154,7 @@ export const sellers: Seller[] = stores.map((store, i) => ({
   joined: `2023-${String((i % 12) + 1).padStart(2, "0")}-12`,
   openTime: hours[i % hours.length][0],
   closeTime: hours[i % hours.length][1],
+  agreementDoc: docImg(`s${i}`),
 }));
 
 const custNames = [
