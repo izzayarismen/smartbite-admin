@@ -36,6 +36,7 @@ export interface Seller {
   joined: string;
   openTime: string;
   closeTime: string;
+  agreementDoc: string;
 }
 
 export interface Customer {
@@ -49,16 +50,39 @@ export interface Customer {
   lastActive: string;
 }
 
+export type ActivityActor = "admin" | "seller" | "customer";
+
+export type ActivityType =
+  // admin
+  | "login"
+  | "approve"
+  | "reject"
+  | "delete_customer"
+  | "open_store"
+  | "close_store"
+  | "delete_store"
+  | "change_global_hours"
+  | "platform_on"
+  | "platform_off"
+  // seller
+  | "seller_open"
+  | "seller_close"
+  | "add_menu"
+  | "edit_menu"
+  | "delete_menu"
+  | "update_info"
+  | "seller_change_hours"
+  | "complete_order"
+  // customer
+  | "create_order"
+  | "cancel_order"
+  | "pickup_order"
+  | "update_profile";
+
 export interface ActivityItem {
   id: string;
-  type:
-    | "login"
-    | "approve"
-    | "reject"
-    | "delete_customer"
-    | "open_store"
-    | "close_store"
-    | "delete_store";
+  type: ActivityType;
+  actorType: ActivityActor;
   actor: string;
   description: string;
   time: string;
