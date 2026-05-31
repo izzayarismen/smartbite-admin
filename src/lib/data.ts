@@ -10,6 +10,7 @@ export interface PendingSeller {
   storePhoto: string;
   ktpPhoto: string;
   selfiePhoto: string;
+  agreementDoc: string;
   registeredAt: string;
   phone: string;
   email: string;
