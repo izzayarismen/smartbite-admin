@@ -105,6 +105,43 @@ function DetailPenjual() {
           </div>
         </GlassCard>
       </div>
+
+      <div className="mt-5">
+        <GlassCard delay={0.18}>
+          <div className="mb-4 flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            <h3 className="font-bold">Dokumen Surat Perjanjian</h3>
+          </div>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="overflow-hidden rounded-2xl border border-border bg-accent/30 md:col-span-1">
+              <img src={seller.agreementDoc} alt="Surat Perjanjian" className="h-56 w-full object-cover" />
+            </div>
+            <div className="flex flex-col justify-center gap-3 md:col-span-2">
+              <p className="text-sm text-muted-foreground">
+                Dokumen ini diunggah oleh penjual saat proses pendaftaran sebagai bukti persetujuan
+                ketentuan platform SmartBite.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={seller.agreementDoc}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-accent"
+                >
+                  <Eye className="h-4 w-4" /> Lihat Dokumen Penuh
+                </a>
+                <a
+                  href={seller.agreementDoc}
+                  download
+                  className="inline-flex items-center gap-2 rounded-2xl gradient-brand px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
+                >
+                  <Download className="h-4 w-4" /> Unduh
+                </a>
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+      </div>
     </AdminLayout>
   );
 }
