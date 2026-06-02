@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, LineChart } from "lucide-react";
 import {
-  Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis,
+  CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis,
 } from "recharts";
 import { GlassCard } from "@/components/ui/glass-card";
 
