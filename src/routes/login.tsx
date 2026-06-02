@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Mail, Lock, Eye, EyeOff, UtensilsCrossed, ArrowRight, ShieldCheck } from "lucide-react";
 import loginIllustration from "@/assets/login-illustration.jpg";
+import axios from "axios";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -20,14 +21,46 @@ function LoginPage() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  // State untuk menangkap input form secara dinamis
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      // Hit ke endpoint production Vercel
+      const response = await axios.post("http://localhost:5000/api/auth/login-admin", {
+        email,
+        password,
+      });
+
+      console.log(response.data);
+
+      if (response.data && response.data.token) {
+        // 1. Simpan token ke localStorage browser
+        localStorage.setItem("token", response.data.token);
+
+        toast.success(response.data.message || "Berhasil masuk");
+
+        // 2. Alihkan ke dashboard utama
+        await navigate({ to: "/" });
+
+        // FIX UNTUK CSR: Paksa reload halaman agar router membersihkan cache instan
+        // dan useEffect Guarding di __root.tsx langsung membaca token baru dengan akurat.
+        window.location.reload();
+      } else {
+        toast.error("Gagal mendapatkan kunci otentikasi dari server.");
+      }
+    } catch (error: any) {
+      console.error("Login Admin Error:", error);
+      toast.error(
+        error.response?.data?.message || "Gagal masuk. Periksa kembali email dan password Anda.",
+      );
+    } finally {
       setLoading(false);
-      toast.success("Berhasil masuk");
-      navigate({ to: "/" });
-    }, 900);
+    }
   };
 
   return (
@@ -63,15 +96,6 @@ function LoginPage() {
             className="mx-auto w-full max-w-md rounded-3xl border border-white/20 shadow-2xl"
           />
         </motion.div>
-
-        <div className="relative">
-          <h2 className="text-3xl font-extrabold leading-tight">
-            Kelola ekosistem pemesanan makanan kampus
-          </h2>
-          <p className="mt-3 max-w-md text-primary-foreground/85">
-            Platform Self Pickup untuk kampus & pujasera. Pantau transaksi, verifikasi penjual, dan kelola pengguna dalam satu dashboard premium.
-          </p>
-        </div>
       </div>
 
       {/* Right login card */}
@@ -98,7 +122,9 @@ function LoginPage() {
           </div>
 
           <h1 className="text-2xl font-extrabold tracking-tight">Selamat datang kembali</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Masuk ke akun admin Anda untuk melanjutkan</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Masuk ke akun admin Anda untuk melanjutkan
+          </p>
 
           <form onSubmit={submit} className="mt-8 space-y-5">
             <div>
@@ -108,7 +134,8 @@ function LoginPage() {
                 <input
                   type="email"
                   required
-                  defaultValue="admin@smartbite.id"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@smartbite.id"
                   className="h-12 w-full rounded-2xl border border-border bg-background pl-11 pr-4 text-sm outline-none transition-shadow focus:shadow-glow"
                 />
@@ -122,7 +149,8 @@ function LoginPage() {
                 <input
                   type={showPw ? "text" : "password"}
                   required
-                  defaultValue="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="h-12 w-full rounded-2xl border border-border bg-background pl-11 pr-11 text-sm outline-none transition-shadow focus:shadow-glow"
                 />
@@ -138,7 +166,11 @@ function LoginPage() {
 
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <input type="checkbox" className="h-4 w-4 rounded border-border accent-primary" defaultChecked />
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-border accent-primary"
+                  defaultChecked
+                />
                 Ingat saya
               </label>
               <button type="button" className="text-sm font-semibold text-primary hover:underline">

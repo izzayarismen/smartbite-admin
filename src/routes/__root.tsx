@@ -6,10 +6,13 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useLocation,
+  useNavigate,
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
+import { useEffect } from "react";
 
 
 function NotFoundComponent() {
@@ -122,6 +125,23 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Pure CSR Guarding menggunakan useEffect React Hook
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    // JIKA TIDAK ADA TOKEN (Belum Login): Paksa mental ke /login jika mencoba akses halaman internal
+    if (!token && location.pathname !== "/login") {
+      navigate({ to: "/login" });
+    }
+
+    // JIKA ADA TOKEN (Sudah Login): Kunci jalan masuk ke /login, arahkan langsung tetap di dashboard /
+    if (token && location.pathname === "/login") {
+      navigate({ to: "/" });
+    }
+  }, [location.pathname, navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
