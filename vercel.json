@@ -1,9 +1,14 @@
 {
-   "version": 2,
-   "routes": [
-     {
-       "src": "/(.*)",
-       "dest": "/"
-     }
-   ]
- }
+  "version": 2,
+  "routes": [
+    {
+      "src": "/_build/(.*)",
+      "dest": "/_build/$1",
+      "check": true
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ]
+}
