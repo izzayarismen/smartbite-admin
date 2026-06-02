@@ -96,7 +96,6 @@ function AktivitasPage() {
 
       <GlassCard>
         <div className="relative pl-2">
-          <div className="absolute left-[1.35rem] top-2 bottom-2 w-px bg-border" />
           <div className="space-y-6">
             {filtered.map((a, i) => {
               const m = meta[a.type];
@@ -110,7 +109,7 @@ function AktivitasPage() {
                   className="relative flex gap-4"
                 >
                   <div className={`relative z-10 grid h-10 w-10 shrink-0 place-items-center rounded-xl ${m.color}`}>
-                    <m.icon className="h-[18px] w-[18px]" />
+                    <m.icon className="h-4.5 w-4.5" />
                   </div>
                   <div className="flex-1 pt-1">
                     <div className="flex flex-wrap items-center gap-2">

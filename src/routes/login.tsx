@@ -136,7 +136,7 @@ function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@smartbite.id"
+                  placeholder="admin@gmail.com"
                   className="h-12 w-full rounded-2xl border border-border bg-background pl-11 pr-4 text-sm outline-none transition-shadow focus:shadow-glow"
                 />
               </div>

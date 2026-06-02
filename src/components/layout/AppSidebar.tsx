@@ -30,9 +30,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     url === "/" ? pathname === "/" : pathname.startsWith(url);
 
   const doLogout = () => {
+    // Menghapus token dari localstorage
+    localStorage.removeItem("token"); 
+    
     setConfirmLogout(false);
     onNavigate?.();
     toast.success("Berhasil keluar");
+    
+    // Redirect ke halaman login
     setTimeout(() => navigate({ to: "/login" }), 300);
   };
 
@@ -40,7 +45,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="glass-card flex h-full flex-col p-4">
       <div className="flex items-center gap-3 px-2 py-3">
         <div className="grid h-11 w-11 place-items-center rounded-2xl gradient-brand shadow-glow">
-          <UtensilsCrossed className="h-6 w-6 text-primary-foreground" />
+          <img src="/logo.png" alt="logo" />
         </div>
         <div>
           <p className="text-base font-extrabold leading-tight">SmartBite</p>
@@ -70,7 +75,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <item.icon className="h-[18px] w-[18px]" />
+                <item.icon className="h-4.5 w-4.5" />
                 {item.title}
               </span>
             </Link>
@@ -79,64 +84,16 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="mt-3 space-y-3">
-        <div className="rounded-2xl bg-accent/60 p-4 text-center">
-          <p className="text-xs font-semibold text-accent-foreground">Self Pickup Platform</p>
-          <p className="mt-1 text-[11px] text-muted-foreground">Kampus & Pujasera</p>
-        </div>
-
         <div className="border-t border-border pt-3">
           <button
-            onClick={() => setConfirmLogout(true)}
+            onClick={doLogout}
             className="flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10"
           >
-            <LogOut className="h-[18px] w-[18px]" />
+            <LogOut className="h-4.5 w-4.5" />
             Logout
           </button>
         </div>
       </div>
-
-      <AnimatePresence>
-        {confirmLogout && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] grid place-items-center bg-foreground/30 p-4 backdrop-blur-sm"
-            onClick={() => setConfirmLogout(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 12 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 12 }}
-              transition={{ type: "spring", stiffness: 320, damping: 28 }}
-              onClick={(e) => e.stopPropagation()}
-              className="glass-card w-full max-w-sm p-6 text-center"
-            >
-              <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-destructive/12 text-destructive">
-                <LogOut className="h-7 w-7" />
-              </div>
-              <h3 className="mt-4 text-lg font-bold">Keluar dari Admin?</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Anda akan diarahkan ke halaman login SmartBite Admin.
-              </p>
-              <div className="mt-6 flex gap-3">
-                <button
-                  onClick={() => setConfirmLogout(false)}
-                  className="flex-1 rounded-2xl border border-border py-3 text-sm font-bold transition-colors hover:bg-accent"
-                >
-                  Batal
-                </button>
-                <button
-                  onClick={doLogout}
-                  className="flex-1 rounded-2xl bg-destructive py-3 text-sm font-bold text-destructive-foreground transition-transform hover:scale-[1.02]"
-                >
-                  Logout
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
@@ -166,7 +123,7 @@ export function MobileSidebar({ open, onClose }: { open: boolean; onClose: () =>
             animate={{ x: 0 }}
             exit={{ x: "-105%" }}
             transition={{ type: "spring", stiffness: 320, damping: 34 }}
-            className="absolute left-3 top-3 bottom-3 w-[17rem] max-w-[85vw]"
+            className="absolute left-3 top-3 bottom-3 w-68 max-w-[85vw]"
           >
             <button
               onClick={onClose}

@@ -360,7 +360,7 @@ function DetailRow({ icon: Icon, label, value }: { icon: React.ElementType; labe
   return (
     <div className="flex items-center gap-3">
       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent/60 text-primary">
-        <Icon className="h-[18px] w-[18px]" />
+        <Icon className="h-4.5 w-4.5" />
       </div>
       <div className="min-w-0">
         <p className="text-xs text-muted-foreground">{label}</p>
