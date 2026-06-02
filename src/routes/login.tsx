@@ -31,7 +31,7 @@ function LoginPage() {
 
     try {
       // Hit ke endpoint production Vercel
-      const response = await axios.post("http://localhost:5000/api/auth/login-admin", {
+      const response = await axios.post("https://smartbitepjbl.vercel.app/api/auth/login-admin", {
         email,
         password,
       });

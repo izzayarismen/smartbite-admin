@@ -23,7 +23,7 @@ export const Route = createFileRoute("/customer/$id")({
 });
 
 function DetailCustomer() {
-  // Ambil parameter secara dinamis menggunakan safety cast 'as any' 
+  // Ambil parameter secara dinamis menggunakan safety cast 'as any'
   // untuk mencegah bentrokan kompilasi pada file routeTree.gen.ts
   const params = Route.useParams() as any;
   const id = params?.id;
@@ -39,11 +39,14 @@ function DetailCustomer() {
         const token = localStorage.getItem("token");
 
         // Request menuju port lokal 5000 sesuai instruksi Anda
-        const response = await axios.get(`http://localhost:5000/api/auth/customers/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const response = await axios.get(
+          `https://smartbitepjbl.vercel.app/api/auth/customers/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
 
         if (response.data && response.data.customer) {
           setC(response.data.customer);
@@ -52,7 +55,9 @@ function DetailCustomer() {
         }
       } catch (error: any) {
         console.error("Gagal memuat detail customer:", error);
-        toast.error(error.response?.data?.message || "Gagal menyambung ke server backend lokal (Port 5000)");
+        toast.error(
+          error.response?.data?.message || "Gagal menyambung ke server backend lokal (Port 5000)",
+        );
         setC(null);
       } finally {
         setLoading(false);
@@ -83,12 +88,18 @@ function DetailCustomer() {
     return (
       <AdminLayout title="Detail Customer">
         <div className="space-y-4">
-          <Link to="/customer" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
+          <Link
+            to="/customer"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+          >
             <ArrowLeft className="h-4 w-4" /> Kembali ke Manajemen Customer
           </Link>
           <GlassCard>
             <p className="text-sm text-muted-foreground text-center py-4">
-              Data pelanggan dengan ID <span className="font-mono font-bold">{id}</span> tidak ditemukan atau server <span className="font-mono text-destructive">http://localhost:5000</span> belum dinyalakan.
+              Data pelanggan dengan ID <span className="font-mono font-bold">{id}</span> tidak
+              ditemukan atau server{" "}
+              <span className="font-mono text-destructive">https://smartbitepjbl.vercel.app</span>{" "}
+              belum dinyalakan.
             </p>
           </GlassCard>
         </div>
@@ -97,13 +108,22 @@ function DetailCustomer() {
   }
 
   // Pengondisian format waktu yang aman dari resiko Nil/Null crash
-  const joinedDate = c.createdAt 
-    ? new Date(c.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
+  const joinedDate = c.createdAt
+    ? new Date(c.createdAt).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
     : "-";
 
   const lastActiveTime = c.updatedAt
-    ? new Date(c.updatedAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) + 
-      " " + new Date(c.updatedAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
+    ? new Date(c.updatedAt).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }) +
+      " " +
+      new Date(c.updatedAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })
     : "-";
 
   const stats = [
@@ -114,7 +134,10 @@ function DetailCustomer() {
 
   return (
     <AdminLayout title="Detail Customer" subtitle={c.nama}>
-      <Link to="/customer" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground">
+      <Link
+        to="/customer"
+        className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4" /> Kembali ke Manajemen Customer
       </Link>
 
