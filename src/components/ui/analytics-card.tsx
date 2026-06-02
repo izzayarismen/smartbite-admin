@@ -83,9 +83,9 @@ export function AnalyticsCard({
       </div>
 
       <ResponsiveContainer width="100%" height={280}>
-        <ReLineChart data={data} margin={{ left: -20 }}>
+        <ReLineChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 10 }}>
           <CartesianGrid vertical={false} strokeDasharray="4 4" stroke="rgba(11,97,244,0.10)" />
-          <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={12} stroke="#2773F5" />
+          <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={12} stroke="#2773F5" padding={{ left: 16, right: 16 }} />
           <Tooltip
             contentStyle={tooltipStyle}
             cursor={{ stroke: "#2773F5", strokeWidth: 1.5, strokeDasharray: "4 4" }}
