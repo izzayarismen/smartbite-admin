@@ -136,7 +136,7 @@ function DetailCustomer() {
             {stats.map((s) => (
               <div key={s.label} className="rounded-2xl bg-accent/40 p-4">
                 <div className="grid h-9 w-9 place-items-center rounded-xl bg-card text-primary">
-                  <s.icon className="h-[18px] w-[18px]" />
+                  <s.icon className="h-4.5 w-4.5" />
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">{s.label}</p>
                 <p className="text-lg font-extrabold">{s.value}</p>
@@ -163,7 +163,7 @@ function Row({ icon: Icon, value }: { icon: React.ElementType; value: string }) 
   return (
     <div className="flex items-center gap-3">
       <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent/60 text-primary">
-        <Icon className="h-[18px] w-[18px]" />
+        <Icon className="h-4.5 w-4.5" />
       </div>
       <span className="truncate font-medium">{value}</span>
     </div>

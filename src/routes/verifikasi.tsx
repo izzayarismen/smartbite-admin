@@ -1,16 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Check, X, Calendar, Tag, Phone, Mail, UserSquare, Store, Eye, Download } from "lucide-react";
+import { Check, X, Calendar, Tag, Phone, Mail, UserSquare, Store } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Drawer } from "@/components/ui/drawer-panel";
 import { DataTable, type Column } from "@/components/ui/data-table";
-import {
-  pendingSellers, verifyHistory, type PendingSeller, type VerifyHistory,
-} from "@/lib/data";
+
+// Interface dicocokkan dengan data dinamis dari skema database Toko + User terpopulasi
+interface PendingSeller {
+  id: string;
+  name: string;
+  store: string;
+  category: string;
+  no_hp: string;
+  email: string;
+  registeredAt: string;
+  storePhoto: string;
+  ktpPhoto: string;
+  selfiePhoto: string;
+}
+
+interface VerifyHistory {
+  id: string;
+  name: string;
+  store: string;
+  status: "approved" | "rejected" | "pending";
+  verifiedAt: string;
+}
 
 export const Route = createFileRoute("/verifikasi")({
   head: () => ({
@@ -29,27 +48,148 @@ const tabs = [
 
 function VerifikasiPage() {
   const [tab, setTab] = useState("pending");
-  const [list, setList] = useState(pendingSellers);
+  const [list, setList] = useState<PendingSeller[]>([]);
+  const [historyList, setHistoryList] = useState<VerifyHistory[]>([]);
   const [selected, setSelected] = useState<PendingSeller | null>(null);
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [loading, setLoading] = useState(false);
 
-  const approve = (s: PendingSeller) => {
-    setList((l) => l.filter((x) => x.id !== s.id));
-    setSelected(null);
-    toast.success(`${s.store} disetujui`);
+  const API_URL = "http://localhost:5000/api";
+
+  // Fungsi helper untuk mengambil token dari localStorage dengan tipe data explisit
+  const getAuthHeader = (): Record<string, string> => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
   };
-  const reject = (s: PendingSeller) => {
+
+  // Fetch Data Toko yang Pending
+  const fetchPendingToko = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/toko/admin/pending`, {
+        headers: {
+          ...getAuthHeader(),
+        },
+      });
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        const formattedData = result.data.map((toko: any) => ({
+          id: toko._id,
+          name: toko.user_id?.nama || "Tidak ada nama",
+          store: toko.nama || "Toko Tanpa Nama",
+          category: toko.kategori || "Umum",
+          no_hp: toko.user_id?.no_hp || "-", 
+          email: toko.user_id?.email || "-",
+          registeredAt: toko.createdAt ? new Date(toko.createdAt).toLocaleDateString("id-ID") : "-",
+          storePhoto: toko.foto_url || "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=500", 
+          ktpPhoto: toko.foto_ktp_url || "https://images.unsplash.com/photo-1554774853-aae0a22c8aa4?w=500",
+          selfiePhoto: toko.foto_diri_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500"
+        }));
+        setList(formattedData);
+      } else {
+        toast.error(result.message || "Gagal memuat daftar verifikasi");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Gagal terhubung ke server backend");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch Data Semua Riwayat Verifikasi
+  const fetchHistoryToko = async () => {
+    try {
+      const res = await fetch(`${API_URL}/toko/admin/history`, {
+        headers: {
+          ...getAuthHeader(),
+        },
+      });
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        const formattedHistory = result.data.map((item: any) => ({
+          id: item._id,
+          name: item.user_id?.nama || "Tidak ada nama",
+          store: item.nama || "Toko Tanpa Nama",
+          status: item.status_verifikasi, // approved, rejected, atau pending
+          verifiedAt: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString("id-ID") : "-"
+        }));
+        setHistoryList(formattedHistory);
+      }
+    } catch (err) {
+      console.error("Gagal mengambil data riwayat", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingToko();
+    fetchHistoryToko(); // Load riwayat bersamaan saat halaman dibuka
+  }, []);
+
+  const approve = async (s: PendingSeller) => {
+    try {
+      const res = await fetch(`${API_URL}/toko/verify/${s.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+        body: JSON.stringify({ status: "approved" }),
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        // Refresh data riwayat & data pending langsung dari DB biar akurat
+        fetchPendingToko();
+        fetchHistoryToko();
+        setSelected(null);
+        toast.success(`${s.store} berhasil disetujui`);
+      } else {
+        toast.error(result.message || "Gagal menyetujui toko");
+      }
+    } catch (err) {
+      toast.error("Gagal melakukan koneksi untuk verifikasi");
+    }
+  };
+
+  const reject = async (s: PendingSeller) => {
     if (!reason.trim()) {
       toast.error("Alasan penolakan wajib diisi");
       return;
     }
-    setList((l) => l.filter((x) => x.id !== s.id));
-    setSelected(null);
-    setRejecting(false);
-    setReason("");
-    toast.success(`${s.store} ditolak`);
+
+    try {
+      const res = await fetch(`${API_URL}/toko/verify/${s.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+        body: JSON.stringify({ 
+          status: "rejected",
+          alasan_penolakan: reason 
+        }),
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        // Refresh data riwayat & data pending langsung dari DB biar akurat
+        fetchPendingToko();
+        fetchHistoryToko();
+        setSelected(null);
+        setRejecting(false);
+        setReason("");
+        toast.success(`${s.store} berhasil ditolak`);
+      } else {
+        toast.error(result.message || "Gagal menolak toko");
+      }
+    } catch (err) {
+      toast.error("Gagal melakukan koneksi untuk verifikasi");
+    }
   };
 
   const historyCols: Column<VerifyHistory>[] = [
@@ -57,15 +197,15 @@ function VerifikasiPage() {
     { key: "store", header: "Nama Toko", render: (r) => r.store },
     {
       key: "status", header: "Status", render: (r) => (
-        <StatusBadge variant={r.status === "approved" ? "success" : "danger"}>
-          {r.status === "approved" ? "Disetujui" : "Ditolak"}
+        <StatusBadge variant={r.status === "approved" ? "success" : r.status === "rejected" ? "danger" : "warning"}>
+          {r.status === "approved" ? "Disetujui" : r.status === "rejected" ? "Ditolak" : "Pending"}
         </StatusBadge>
       ),
     },
     { key: "date", header: "Tanggal", render: (r) => <span className="text-muted-foreground">{r.verifiedAt}</span> },
   ];
 
-  const filteredHistory = verifyHistory.filter((h) => statusFilter === "all" || h.status === statusFilter);
+  const filteredHistory = historyList.filter((h) => statusFilter === "all" || h.status === statusFilter);
 
   return (
     <AdminLayout title="Verifikasi Penjual" subtitle="Tinjau dan verifikasi penjual baru">
@@ -89,41 +229,43 @@ function VerifikasiPage() {
 
       {tab === "pending" ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {list.map((s, i) => (
-            <GlassCard key={s.id} delay={i * 0.05} hover>
-              <div onClick={() => setSelected(s)}>
-                <div className="h-32 overflow-hidden rounded-2xl">
-                  <img src={s.storePhoto} alt={s.store} className="h-full w-full object-cover" />
-                </div>
-                <div className="mt-4 flex items-start justify-between">
-                  <div>
-                    <h3 className="font-bold">{s.store}</h3>
-                    <p className="text-sm text-muted-foreground">{s.name}</p>
+          {loading ? (
+            <div className="sm:col-span-2 xl:col-span-3 text-center text-muted-foreground py-8">
+              Memuat data toko pending...
+            </div>
+          ) : (
+            list.map((s, i) => (
+              <GlassCard key={s.id} delay={i * 0.05} hover>
+                <div onClick={() => setSelected(s)}>
+                  <div className="h-32 overflow-hidden rounded-2xl">
+                    <img src={s.storePhoto} alt={s.store} className="h-full w-full object-cover" />
                   </div>
-                  <StatusBadge variant="warning">Pending</StatusBadge>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><Tag className="h-3.5 w-3.5" />{s.category}</span>
-                  <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{s.registeredAt}</span>
-                </div>
-                <div className="mt-3 grid grid-cols-3 gap-2">
-                  <div className="overflow-hidden rounded-xl border border-border">
-                    <img src={s.ktpPhoto} alt="KTP" className="h-16 w-full object-cover" />
-                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto KTP</p>
+                  <div className="mt-4 flex items-start justify-between">
+                    <div>
+                      <h3 className="font-bold">{s.store}</h3>
+                      <p className="text-sm text-muted-foreground">{s.name}</p>
+                    </div>
+                    <StatusBadge variant="warning">Pending</StatusBadge>
                   </div>
-                  <div className="overflow-hidden rounded-xl border border-border">
-                    <img src={s.selfiePhoto} alt="Diri" className="h-16 w-full object-cover" />
-                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto Diri</p>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1"><Tag className="h-3.5 w-3.5" />{s.category}</span>
+                    <span className="inline-flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{s.registeredAt}</span>
                   </div>
-                  <div className="overflow-hidden rounded-xl border border-border">
-                    <img src={s.agreementDoc} alt="Surat Perjanjian" className="h-16 w-full object-cover" />
-                    <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Surat Perjanjian</p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <div className="overflow-hidden rounded-xl border border-border">
+                      <img src={s.ktpPhoto} alt="KTP" className="h-16 w-full object-cover" />
+                      <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto KTP</p>
+                    </div>
+                    <div className="overflow-hidden rounded-xl border border-border">
+                      <img src={s.selfiePhoto} alt="Diri" className="h-16 w-full object-cover" />
+                      <p className="bg-accent/40 py-1 text-center text-[10px] font-medium text-muted-foreground">Foto Diri</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </GlassCard>
-          ))}
-          {list.length === 0 && (
+              </GlassCard>
+            ))
+          )}
+          {!loading && list.length === 0 && (
             <GlassCard className="sm:col-span-2 xl:col-span-3 text-center text-muted-foreground">
               Semua penjual sudah diverifikasi. 🎉
             </GlassCard>
@@ -143,6 +285,7 @@ function VerifikasiPage() {
               { label: "Semua Status", value: "all" },
               { label: "Disetujui", value: "approved" },
               { label: "Ditolak", value: "rejected" },
+              { label: "Pending", value: "pending" },
             ],
           }]}
         />
@@ -189,7 +332,7 @@ function VerifikasiPage() {
             <DetailRow icon={UserSquare} label="Nama Penjual" value={selected.name} />
             <DetailRow icon={Store} label="Nama Toko" value={selected.store} />
             <DetailRow icon={Tag} label="Kategori Toko" value={selected.category} />
-            <DetailRow icon={Phone} label="Nomor HP" value={selected.phone} />
+            <DetailRow icon={Phone} label="Nomor HP" value={selected.no_hp} />
             <DetailRow icon={Mail} label="Email" value={selected.email} />
             <DetailRow icon={Calendar} label="Tanggal Pendaftaran" value={selected.registeredAt} />
 
@@ -205,30 +348,6 @@ function VerifikasiPage() {
                 <DocCard src={selected.selfiePhoto} label="Foto Diri" />
               </div>
             </div>
-
-            <div>
-              <p className="mb-2 text-sm font-semibold">Surat Perjanjian</p>
-              <div className="overflow-hidden rounded-2xl border border-border bg-accent/30">
-                <img src={selected.agreementDoc} alt="Surat Perjanjian" className="h-44 w-full object-cover" />
-                <div className="flex gap-2 p-3">
-                  <a
-                    href={selected.agreementDoc}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-2.5 text-sm font-semibold transition-colors hover:bg-accent"
-                  >
-                    <Eye className="h-4 w-4" /> Lihat
-                  </a>
-                  <a
-                    href={selected.agreementDoc}
-                    download
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl gradient-brand py-2.5 text-sm font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
-                  >
-                    <Download className="h-4 w-4" /> Unduh
-                  </a>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </Drawer>
@@ -236,6 +355,7 @@ function VerifikasiPage() {
   );
 }
 
+// Sub-komponen pembantu (DetailRow dan DocCard) tetap di bawah seperti kode asli Anda...
 function DetailRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
