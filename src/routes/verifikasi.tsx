@@ -56,7 +56,7 @@ function VerifikasiPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "https://smartbitepjbl.vercel.app/api";
+  const API_URL = "http://localhost:5000/api";
 
   // Fungsi helper untuk mengambil token dari localStorage dengan tipe data explisit
   const getAuthHeader = (): Record<string, string> => {

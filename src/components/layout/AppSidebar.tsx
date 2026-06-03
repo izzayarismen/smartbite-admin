@@ -18,7 +18,7 @@ const items = [
   { title: "Verifikasi Penjual", url: "/verifikasi", icon: ShieldCheck },
   { title: "Manajemen Penjual", url: "/penjual", icon: Store },
   { title: "Customer", url: "/customer", icon: Users },
-  { title: "Aktivitas Sistem", url: "/aktivitas", icon: Activity },
+  // { title: "Aktivitas Sistem", url: "/aktivitas", icon: Activity },
 ];
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {

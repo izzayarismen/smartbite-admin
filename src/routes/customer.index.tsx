@@ -38,7 +38,7 @@ function CustomerPage() {
         setLoading(true);
         const token = localStorage.getItem("token");
 
-        const response = await axios.get("https://smartbitepjbl.vercel.app/api/auth/customers", {
+        const response = await axios.get("http://localhost:5000/api/auth/customers", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -68,14 +68,11 @@ function CustomerPage() {
     if (window.confirm(`Apakah Anda yakin ingin menghapus customer ${c.nama}?`)) {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.delete(
-          `https://smartbitepjbl.vercel.app/api/auth/customers/${c._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await axios.delete(`http://localhost:5000/api/auth/customers/${c._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         toast.success(response.data.message || `Customer ${c.nama} dihapus`);
         setData((d) => d.filter((x) => x._id !== c._id));

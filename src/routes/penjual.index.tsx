@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Star, Power, PowerOff, Trash2, Clock, Globe, AlertTriangle } from "lucide-react";
+import { Star, Power, PowerOff, Trash2, Clock, Globe, AlertTriangle, Loader2 } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { DataTable, type Column } from "@/components/ui/data-table";
-import { sellers as seedSellers, type Seller } from "@/lib/data";
+import { type Seller } from "@/lib/data";
+
+// Asumsi base URL API backend Anda (sesuaikan dengan config service frontend Anda)
+const API_URL = "http://localhost:5000/api/toko"; 
 
 export const Route = createFileRoute("/penjual/")({
   head: () => ({
@@ -21,30 +24,120 @@ export const Route = createFileRoute("/penjual/")({
 
 function PenjualPage() {
   const navigate = useNavigate();
-  const [data, setData] = useState<Seller[]>(seedSellers);
+  const [data, setData] = useState<Seller[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [statusFilter, setStatusFilter] = useState("all");
 
   // Global operational controls
   const [platformOn, setPlatformOn] = useState(true);
-  const [globalOpen, setGlobalOpen] = useState("08:00");
-  const [globalClose, setGlobalClose] = useState("22:00");
+  const [globalOpen, setGlobalOpen] = useState("07:00");
+  const [globalClose, setGlobalClose] = useState("16:00");
   const [confirmState, setConfirmState] = useState<null | boolean>(null);
 
-  const toggle = (s: Seller) => {
+  // 1. Fetching Data Penjual dari Backend saat Component Mount
+  const fetchSellers = async () => {
+    try {
+      setLoading(true);
+      // Ganti token_admin_disini sesuai manajemen token auth di frontend Anda (misal localStorage)
+      const token = localStorage.getItem("token"); 
+      const response = await fetch(`${API_URL}/admin/penjual`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        setData(result.data);
+      } else {
+        toast.error(result.message || "Gagal mengambil data dari server");
+      }
+    } catch (error: any) {
+      toast.error("Gagal terhubung ke server backend");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSellers();
+  }, []);
+
+  // 2. Aksi Mengubah Status Toko Secara Individu (Toggle Switch)
+  const toggle = async (s: Seller) => {
     if (!platformOn) return;
-    setData((d) => d.map((x) => (x.id === s.id ? { ...x, status: x.status === "active" ? "inactive" : "active" } : x)));
-    toast.success(`${s.store} ${s.status === "active" ? "ditutup" : "dibuka"}`);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/admin/penjual/toggle/${s.id}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        setData((d) =>
+          d.map((x) => (x.id === s.id ? { ...x, status: result.aktif ? "active" : "inactive" } : x))
+        );
+        toast.success(`${s.store} ${result.aktif ? "dibuka" : "ditutup"}`);
+      } else {
+        toast.error(result.message || "Gagal mengubah status toko");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan jaringan");
+    }
   };
 
-  const remove = (s: Seller) => {
-    setData((d) => d.filter((x) => x.id !== s.id));
-    toast.success(`Toko ${s.store} dihapus`);
+  // 3. Aksi Menghapus Toko dari Platform
+  const remove = async (s: Seller) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/admin/penjual/${s.id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        setData((d) => d.filter((x) => x.id !== s.id));
+        toast.success(`Toko ${s.store} dihapus`);
+      } else {
+        toast.error(result.message || "Gagal menghapus toko");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan jaringan");
+    }
   };
 
-  const applyPlatform = (next: boolean) => {
-    setPlatformOn(next);
-    setConfirmState(null);
-    toast.success(next ? "Operasional platform diaktifkan" : "Operasional platform dinonaktifkan");
+  // 4. Aksi Mengubah Operasional Platform Sekaligus (Master Global Switch)
+  const applyPlatform = async (next: boolean) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/admin/penjual/global-switch`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: next })
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        setPlatformOn(next);
+        setConfirmState(null);
+        // Memperbarui visual seluruh tabel status mengikuti switch global secara real-time
+        setData((d) => d.map((x) => ({ ...x, status: next ? "active" : "inactive" })));
+        toast.success(next ? "Operasional platform diaktifkan" : "Operasional platform dinonaktifkan");
+      } else {
+        toast.error(result.message || "Gagal mengubah status global platform");
+      }
+    } catch (error) {
+      toast.error("Terjadi kesalahan jaringan");
+    }
   };
 
   const filtered = data.filter((s) => statusFilter === "all" || s.status === statusFilter);
@@ -100,7 +193,7 @@ function PenjualPage() {
         <GlassCard className="lg:col-span-2">
           <div className="mb-4 flex items-center gap-2">
             <div className="grid h-9 w-9 place-items-center rounded-xl gradient-brand text-primary-foreground shadow-glow">
-              <Clock className="h-[18px] w-[18px]" />
+              <Clock className="h-4.5 w-4.5" />
             </div>
             <div>
               <h2 className="text-base font-bold leading-tight">Jam Operasional Global</h2>
@@ -125,7 +218,7 @@ function PenjualPage() {
         <GlassCard>
           <div className="mb-4 flex items-center gap-2">
             <div className="grid h-9 w-9 place-items-center rounded-xl gradient-brand text-primary-foreground shadow-glow">
-              <Globe className="h-[18px] w-[18px]" />
+              <Globe className="h-4.5 w-4.5" />
             </div>
             <div>
               <h2 className="text-base font-bold leading-tight">Status Operasional Platform</h2>
@@ -156,21 +249,28 @@ function PenjualPage() {
         </GlassCard>
       </div>
 
-      <DataTable
-        data={filtered}
-        columns={cols}
-        searchKeys={["store", "owner"]}
-        searchPlaceholder="Cari toko / pemilik..."
-        onRowClick={(s) => navigate({ to: "/penjual/$id", params: { id: s.id } })}
-        filters={[{
-          label: "Status", value: statusFilter, onChange: setStatusFilter,
-          options: [
-            { label: "Semua Status", value: "all" },
-            { label: "Buka", value: "active" },
-            { label: "Tutup", value: "inactive" },
-          ],
-        }]}
-      />
+      {loading ? (
+        <div className="flex h-48 w-full items-center justify-center gap-2 text-muted-foreground">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="text-sm font-medium">Memuat data penjual...</span>
+        </div>
+      ) : (
+        <DataTable
+          data={filtered}
+          columns={cols}
+          searchKeys={["store", "owner"]}
+          searchPlaceholder="Cari toko / pemilik..."
+          onRowClick={(s) => navigate({ to: "/penjual/$id", params: { id: s.id } })}
+          filters={[{
+            label: "Status", value: statusFilter, onChange: setStatusFilter,
+            options: [
+              { label: "Semua Status", value: "all" },
+              { label: "Buka", value: "active" },
+              { label: "Tutup", value: "inactive" },
+            ],
+          }]}
+        />
+      )}
 
       <AnimatePresence>
         {confirmState !== null && (
@@ -178,7 +278,7 @@ function PenjualPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] grid place-items-center bg-foreground/30 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-60 grid place-items-center bg-foreground/30 p-4 backdrop-blur-sm"
             onClick={() => setConfirmState(null)}
           >
             <motion.div

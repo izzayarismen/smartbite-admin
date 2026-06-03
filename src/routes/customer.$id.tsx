@@ -39,14 +39,11 @@ function DetailCustomer() {
         const token = localStorage.getItem("token");
 
         // Request menuju port lokal 5000 sesuai instruksi Anda
-        const response = await axios.get(
-          `https://smartbitepjbl.vercel.app/api/auth/customers/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await axios.get(`http://localhost:5000/api/auth/customers/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         if (response.data && response.data.customer) {
           setC(response.data.customer);
@@ -98,8 +95,8 @@ function DetailCustomer() {
             <p className="text-sm text-muted-foreground text-center py-4">
               Data pelanggan dengan ID <span className="font-mono font-bold">{id}</span> tidak
               ditemukan atau server{" "}
-              <span className="font-mono text-destructive">https://smartbitepjbl.vercel.app</span>{" "}
-              belum dinyalakan.
+              <span className="font-mono text-destructive">http://localhost:5000</span> belum
+              dinyalakan.
             </p>
           </GlassCard>
         </div>

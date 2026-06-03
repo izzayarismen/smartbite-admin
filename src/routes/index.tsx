@@ -1,15 +1,14 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import {
-  Receipt, CheckCircle2, TrendingUp, TrendingDown, Trophy,
-} from "lucide-react";
-import {
-  Area, AreaChart, ResponsiveContainer,
-} from "recharts";
+import { Store, UserCheck, TrendingUp, Loader2, Trophy } from "lucide-react";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnalyticsCard } from "@/components/ui/analytics-card";
-import { dailySales, monthlySales, topMenus, peakHours } from "@/lib/data";
+import { toast } from "sonner";
+
+const API_URL = "http://localhost:5000/api/toko";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,11 +19,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Dashboard,
 });
-
-const kpis = [
-  { label: "Total Transaksi Hari Ini", value: "1.284", growth: 12.4, up: true, icon: Receipt, trend: [30, 45, 38, 60, 72, 58, 84] },
-  { label: "Pesanan Selesai Hari Ini", value: "1.156", growth: 8.1, up: true, icon: CheckCircle2, trend: [20, 35, 30, 48, 55, 62, 70] },
-];
 
 function Sparkline({ data, up }: { data: number[]; up: boolean }) {
   const chart = data.map((v, i) => ({ i, v }));
@@ -44,9 +38,69 @@ function Sparkline({ data, up }: { data: number[]; up: boolean }) {
 }
 
 function Dashboard() {
-  const maxPeak = Math.max(...peakHours.map((p) => p.value));
-  const daily = dailySales.map((d) => ({ label: d.day, value: d.value }));
-  const monthly = monthlySales.map((m) => ({ label: m.month, value: m.value }));
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_URL}/admin/dashboard-stats`, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+        const result = await response.json();
+        if (result.success) {
+          setStats(result.data);
+        } else {
+          toast.error(result.message || "Gagal memuat ringkasan data");
+        }
+      } catch (error) {
+        toast.error("Gagal menghubungkan ke server backend");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <AdminLayout title="Dashboard">
+        <div className="flex h-64 w-full items-center justify-center gap-2 text-muted-foreground">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="text-sm font-medium">Sinkronisasi data platform...</span>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  // Pengkondisian Data KPI Dinamis mengikuti mapping state database riil
+  const kpis = [
+    { 
+      label: "Total Toko Terdaftar", 
+      value: stats?.totalToko?.toLocaleString("id-ID") || "0", 
+      growth: 100, 
+      up: true, 
+      icon: Store, 
+      trend: stats?.analytics?.daily?.map((d: any) => d.value) || [0, 0, 0, 0, 0, 0, 0] 
+    },
+    { 
+      label: "Total Customer Aktif", 
+      value: stats?.totalCustomer?.toLocaleString("id-ID") || "0", 
+      growth: 100, 
+      up: true, 
+      icon: UserCheck, 
+      trend: stats?.analytics?.monthly?.slice(0, 7).map((m: any) => m.value) || [0, 0, 0, 0, 0, 0, 0] 
+    },
+  ];
+
+  const daily = stats?.analytics?.daily || [];
+  const monthly = stats?.analytics?.monthly || [];
+  const topMenus = stats?.topMenus || [];
 
   return (
     <AdminLayout title="Dashboard" subtitle="Pusat monitoring platform SmartBite">
@@ -58,8 +112,8 @@ function Dashboard() {
                 <k.icon className="h-6 w-6" />
               </div>
               <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${k.up ? "bg-success/12 text-success" : "bg-destructive/12 text-destructive"}`}>
-                {k.up ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-                {k.growth}%
+                <TrendingUp className="h-3.5 w-3.5" />
+                Live Data
               </span>
             </div>
             <p className="mt-4 text-sm font-medium text-muted-foreground">{k.label}</p>
@@ -73,7 +127,7 @@ function Dashboard() {
         <AnalyticsCard
           className="xl:col-span-2"
           title="Analitik Penjualan"
-          subtitle="Jumlah transaksi platform"
+          subtitle="Jumlah transaksi platform global"
           daily={daily}
           monthly={monthly}
           delay={0.1}
@@ -85,43 +139,33 @@ function Dashboard() {
             <h2 className="text-lg font-bold">Menu Terlaris</h2>
           </div>
           <div className="space-y-3">
-            {topMenus.map((m, i) => (
-              <div key={m.name} className="flex items-center gap-3 rounded-2xl bg-accent/40 p-3">
-                <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl text-sm font-bold ${i === 0 ? "gradient-brand text-primary-foreground" : "bg-card text-primary"}`}>
-                  {i + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{m.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{m.store}</p>
-                </div>
-                <span className="shrink-0 text-sm font-bold text-primary">{m.sold}</span>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
-      </div>
+            {topMenus.length > 0 ? (
+              topMenus.map((m: any, i: number) => {
+                // Validasi proteksi: Jika backend tidak sengaja mengirim object di dalam properti name
+                const menuName = typeof m.name === 'object' ? (m.name.nama || "Menu") : m.name;
+                const storeName = typeof m.store === 'object' ? (m.store.nama || "Kantin") : m.store;
+                const totalTerjual = typeof m.sold === 'object' ? 0 : m.sold;
 
-      <div className="mt-6">
-        <GlassCard delay={0.24}>
-          <div className="mb-4">
-            <h2 className="text-lg font-bold">Jam Sibuk Kantin</h2>
-            <p className="text-sm text-muted-foreground">Intensitas pesanan per jam</p>
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {peakHours.map((p, i) => (
-              <div key={p.hour} className="flex items-center gap-3">
-                <span className="w-12 text-xs font-semibold text-muted-foreground">{p.hour}:00</span>
-                <div className="h-3 flex-1 overflow-hidden rounded-full bg-accent/60">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(p.value / maxPeak) * 100}%` }}
-                    transition={{ duration: 0.7, delay: 0.3 + i * 0.05 }}
-                    className="h-full rounded-full gradient-brand"
-                  />
-                </div>
-                <span className="w-8 text-right text-xs font-bold">{p.value}</span>
+                return (
+                  <div key={i} className="flex items-center gap-3 rounded-2xl bg-accent/40 p-3">
+                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl text-sm font-bold ${i === 0 ? "gradient-brand text-primary-foreground" : "bg-card text-primary"}`}>
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{String(menuName)}</p>
+                      <p className="truncate text-xs text-muted-foreground">{String(storeName)}</p>
+                    </div>
+                    <span className="shrink-0 text-sm font-bold text-primary">
+                      {isNaN(Number(totalTerjual)) ? 0 : Number(totalTerjual)} Porsi
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="rounded-2xl bg-accent/20 p-4 text-center text-xs text-muted-foreground">
+                Belum ada rekaman transaksi menu terjual di dalam platform.
               </div>
-            ))}
+            )}
           </div>
         </GlassCard>
       </div>
